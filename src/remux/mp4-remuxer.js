@@ -461,12 +461,12 @@ class MP4Remuxer {
       sample.pts = sample.dts = ptsNormalize(sample.pts - initPTS, timeOffset * inputTimeScale);
     });
 
-    // filter out sample with negative PTS that are not playable anyway
-    // if we don't remove these negative samples, they will shift all audio samples forward.
-    // leading to audio overlap between current / next fragment
-    inputSamples = inputSamples.filter(function (sample) {
-      return sample.pts >= 0;
-    });
+    // // filter out sample with negative PTS that are not playable anyway
+    // // if we don't remove these negative samples, they will shift all audio samples forward.
+    // // leading to audio overlap between current / next fragment
+    // inputSamples = inputSamples.filter(function (sample) {
+    //  return sample.pts >= 0;
+    // });
 
     // in case all samples have negative PTS, and have been filtered out, return now
     if (inputSamples.length === 0) {
@@ -581,8 +581,8 @@ class MP4Remuxer {
             pts = nextAudioPts;
           }
         }
-        // remember first PTS of our audioSamples
-        firstPTS = pts;
+        // remember first PTS of our audioSamples, ensure value is positive
+        firstPTS = Math.max(0, pts);
         if (track.len > 0) {
           /* concatenate the audio data and construct the mdat in place
             (need 8 more bytes to fill length and mdat type) */
